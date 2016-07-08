@@ -44,7 +44,20 @@ html{
   background-color: #FFCDB2;
 }
 
-.gameboard, .answer-text-container{
+.question-number-container{
+  display: block;
+  position: absolute;
+  top: -13%;
+  left: 27%;
+}
+
+.question-container{
+  display: block;
+  position: absolute;
+  top: 20%;;
+}
+
+.gameboard {
 display: block;
 height: 72%;
 width: 93%;
@@ -66,7 +79,7 @@ left: 3%;
   width: 22%;
   border: 1px solid #6D6875;
   position: absolute;
-  top: 92%;
+  top: 107%;
   left: 20%;
   background-color: #E5989B;
   border-radius: 8px;
@@ -91,7 +104,7 @@ left: 3%;
   width: 22%;
   border: 1px solid #6D6875;
   position: absolute;
-  top: 92%;
+  top: 107%;
   right:20%;
   background-color: #E5989B;
   border-radius: 8px;
@@ -198,6 +211,30 @@ left: 3%;
   left: 26%;
   border-radius: 8px;
   background-color: #FFCDB2;
+}
+
+.answer-text-container{
+  display: block;
+  height: 72%;
+  width: 93%;
+  position: absolute;
+  top: 13%;
+  left: 3%;
+}
+
+.outcome-container{
+  display: block;
+  position: absolute;
+  top: -8%;
+  left: 35%;
+
+}
+
+.outcome-container h2, .question-number-container h2{
+  font-family: raleway;
+  font-size: 42px;
+  font-weight: bolder;
+  color: #5BC0EB;
 }
 
 .close-btn{

@@ -26,6 +26,37 @@ Quiz.prototype.play = function(){
 
   }.bind(this); //closes askQuestion function
 
+  function chooseRandomQuestion(questionBankforRandom, questionsAskedArr){
+    var questionNumChosen = Math.floor(20 * Math.random() + 1);
+    if(questionsAskedArr.indexOf(questionNumChosen) > -1){
+      questionNumChosen = chooseRandomQuestion(questionBankforRandom, questionsAskedArr);
+    }else{
+      var questionChosenText = questionBankforRandom[questionNumChosen].question;
+      $(".question-container h2").text(questionChosenText);
+    }
+    return questionNumChosen;
+  }
+
+  function displayAnswer(choice, questionAsked, turnNumber){
+    if(turnNumber === 10){
+      $(".close-btn-text h2").text("SHOW WINNER");
+      $(".close-btn-text").css("left", "13px");
+      $(".turn-container").css("display", "none");
+    }else{
+      $(".close-btn-text h2").text("NEXT QUESTION");
+      $(".close-btn-text").css("left", "3px");
+    }
+    $(".answer-container").css("display","block");
+    $(".answer-text-container h2").text(questionAsked.explanation);
+    if(choice === questionAsked.answer){
+      $(".outcome-container h2").text(choice + " IS CORRECT!");
+      return 1;
+    }else{
+      $(".outcome-container h2").text(choice + " IS WRONG!");
+      return 0;
+    }
+  }
+
   askQuestion();
 
   var restartGame = function(){
@@ -90,38 +121,6 @@ Quiz.prototype.play = function(){
 };
 
 
-function chooseRandomQuestion(questionBankforRandom, questionsAskedArr){
-  console.log(questionsAskedArr);
-  var questionNumChosen = Math.floor(20 * Math.random() + 1);
-  if(questionsAskedArr.indexOf(questionNumChosen) > -1){
-    questionNumChosen = chooseRandomQuestion(questionBankforRandom, questionsAskedArr);
-  }else{
-    var questionChosenText = questionBankforRandom[questionNumChosen].question;
-    $(".question-container h2").text(questionChosenText);
-  }
-  return questionNumChosen;
-}
-
-function displayAnswer(choice, questionAsked, turnNumber){
-  if(turnNumber === 10){
-    $(".close-btn-text h2").text("SHOW WINNER");
-    $(".close-btn-text").css("left", "13px");
-    $(".turn-container").css("display", "none");
-  }else{
-    $(".close-btn-text h2").text("NEXT QUESTION");
-    $(".close-btn-text").css("left", "3px");
-  }
-  $(".answer-container").css("display","block");
-  $(".answer-text-container h2").text(questionAsked.explanation);
-  if(choice === questionAsked.answer){
-    $(".outcome-container h2").text(choice + " IS CORRECT!");
-    return 1;
-  }else{
-    $(".outcome-container h2").text(choice + " IS WRONG!");
-    return 0;
-  }
-}
-
 var quiz1Questions = {
   1: {question: "Newton's First Law is also known as the Law of Inertia",
       answer:"TRUE",
@@ -185,13 +184,6 @@ var quiz1Questions = {
       explanation: "It means 'I think therefore I am' and is the best-known philosophical statement by Rene Descartes"}
 };
 
-var trueFalseQuiz = new Quiz(quiz1Questions, [], 0, 1, [0, 0], "");
+var randomQuestionsQuiz = new Quiz(quiz1Questions, [], 0, 1, [0, 0], "");
 
-trueFalseQuiz.play();
-
-// trueFalseQuiz.play([], 0, 1, [0, 0], "");
-// .bind(trueFalseQuiz);
-
-// for(i = 1; i < 2; i ++){
-//   console.log(trueFalseQuiz.questionBank[i].question);
-// }
+randomQuestionsQuiz.play();

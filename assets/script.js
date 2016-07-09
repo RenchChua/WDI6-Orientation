@@ -1,25 +1,20 @@
-var Quiz = function(questionBank){
+var Quiz = function(questionBank, questionsAsked, playerTurn, currentQuestion, playerScore, outcome){
   this.questionBank = questionBank;
-  this.questionsAsked = [];
-  this.playerTurn = 0;
-  this.currentQuestion = 1;
-  this.playerScore = [0, 0];
-  this.outcome = "";
+  this.questionsAsked = questionsAsked;
+  this.playerTurn = playerTurn;
+  this.currentQuestion = currentQuestion;
+  this.playerScore = playerScore;
+  this.outcome = outcome;
 };
 
 Quiz.prototype.play = function(){
   // declaring all the variables for the game
   var questionNumChosen;
-  var questionBankforRandom = this.questionBank;
-  var questionsAskedArr = this.questionsAsked;
-  // var currentQuestion = this.currentQuestion;
-  var playerScore = this.playerScore;
-  var playerTurn = 0;
   var scoreChange = 0;
 
   var askQuestion = function(){
-    questionNumChosen = chooseRandomQuestion(questionBankforRandom, questionsAskedArr); //keeping track of the question number chosen at random
-    questionsAskedArr.push(questionNumChosen);
+    questionNumChosen = chooseRandomQuestion(this.questionBank, this.questionsAsked); //keeping track of the question number chosen at random
+    this.questionsAsked.push(questionNumChosen);
     if((this.currentQuestion - 1)% 2 === 0){
       playerTurn = 0;
     }else{
@@ -33,17 +28,29 @@ Quiz.prototype.play = function(){
 
   askQuestion();
 
+  var restartGame = function(){
+    $(".winner-container").css("display", "none");
+    $(".answer-container").css("display","none");
+    $(".turn-container").css("display", "block");
+    $(".winner-text-container").css("left", "19%");
+    $(".player-one-container h2").text("PLAYER 1: 0" );
+    $(".player-two-container h2").text("PLAYER 2: 0");
+    this.questionsAsked = [];
+    this.playerTurn = 0;
+    this.currentQuestion = 1;
+    this.playerScore = [0, 0];
+    this.outcome = "";
+    askQuestion();
+  }.bind(this);
+
   // button listeners
   $(".true-container").click(function(){
     var questionAsked = this.questionBank[questionNumChosen];
     var turnNumber = this.currentQuestion;
     scoreChange = displayAnswer("TRUE", questionAsked, turnNumber);
     this.playerScore[playerTurn] += scoreChange;
-    console.log(this.playerScore);
-    // playerScore[playerTurn] += scoreChange;
     $(".player-one-container h2").text("PLAYER 1: " + this.playerScore[0]);
     $(".player-two-container h2").text("PLAYER 2: " + this.playerScore[1]);
-    // this.playerScore = playerScore;
   }.bind(this));
 
   $(".false-container").click(function(){
@@ -51,11 +58,8 @@ Quiz.prototype.play = function(){
     var turnNumber = this.currentQuestion;
     scoreChange = displayAnswer("FALSE", questionAsked, turnNumber);
     this.playerScore[playerTurn] += scoreChange;
-    console.log(this.playerScore);
-    // playerScore[playerTurn] += scoreChange;
     $(".player-one-container h2").text("PLAYER 1: " + this.playerScore[0]);
     $(".player-two-container h2").text("PLAYER 2: " + this.playerScore[1]);
-    // this.playerScore = playerScore;
   }.bind(this));
 
   $(".close-btn").click(function(){
@@ -75,34 +79,19 @@ Quiz.prototype.play = function(){
       $(".winner-container").css("display", "block");
     }
   }.bind(this));
+
+  $(".win-close-btn").click(function(){
+    restartGame();
+  }.bind(this));
+
+  $(".restart-container").click(function(){
+    restartGame();
+  }.bind(this));
 };
 
-var restartGame = function(){
-  console.log(this);
-  this.questionsAsked = [];
-  this.playerTurn = 0;
-  this.currentQuestion = 1;
-  this.playerScore = [0, 0];
-  this.outcome = "";
-  $(".winner-container").css("display", "none");
-  $(".answer-container").css("display","none");
-  $(".turn-container").css("display", "block");
-  $(".winner-text-container").css("left", "19%");
-  $(".player-one-container h2").text("PLAYER 1: " + this.playerScore[0]);
-  $(".player-two-container h2").text("PLAYER 2: " + this.playerScore[1]);
-  askQuestion();
-}.bind(this);
-
-$(".win-close-btn").click(function(){
-  console.log(this);
-  restartGame();
-});
-
-$(".restart-container").click(function(){
-  restartGame();
-});
 
 function chooseRandomQuestion(questionBankforRandom, questionsAskedArr){
+  console.log(questionsAskedArr);
   var questionNumChosen = Math.floor(20 * Math.random() + 1);
   if(questionsAskedArr.indexOf(questionNumChosen) > -1){
     questionNumChosen = chooseRandomQuestion(questionBankforRandom, questionsAskedArr);
@@ -131,10 +120,9 @@ function displayAnswer(choice, questionAsked, turnNumber){
     $(".outcome-container h2").text(choice + " IS WRONG!");
     return 0;
   }
-
 }
 
-var trueFalseQuiz = new Quiz({
+var quiz1Questions = {
   1: {question: "Newton's First Law is also known as the Law of Inertia",
       answer:"TRUE",
       explanation: "Newton's First Law states that an object at rest will stay at rest and an object in motion will continue moving with the same velocity unless an unbalanced force acts on it"},
@@ -195,9 +183,13 @@ var trueFalseQuiz = new Quiz({
   20: {question: "'Cogito ergo sum' means 'Mathematics allows us to think'",
       answer:"FALSE",
       explanation: "It means 'I think therefore I am' and is the best-known philosophical statement by Rene Descartes"}
-});
+};
+
+var trueFalseQuiz = new Quiz(quiz1Questions, [], 0, 1, [0, 0], "");
 
 trueFalseQuiz.play();
+
+// trueFalseQuiz.play([], 0, 1, [0, 0], "");
 // .bind(trueFalseQuiz);
 
 // for(i = 1; i < 2; i ++){

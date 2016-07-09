@@ -2,48 +2,105 @@ var Quiz = function(questionBank){
   this.questionBank = questionBank;
   this.questionsAsked = [];
   this.playerTurn = 0;
-  this.currentQuestion = 0;
+  this.currentQuestion = 1;
   this.playerScore = [0, 0];
   this.outcome = "";
 };
 
 Quiz.prototype.play = function(){
+  // declaring all the variables for the game
+  var questionNumChosen;
+  var questionBankforRandom = this.questionBank;
+  var questionsAskedArr = this.questionsAsked;
+  // var currentQuestion = this.currentQuestion;
+  var playerScore = this.playerScore;
+  var playerTurn = 0;
+  var scoreChange = 0;
+
   var askQuestion = function(){
-    var questionNumChosen;
-    var scoreChange = 0
-    questionBankforRandom = this.questionBank;
-    questionsAskedArr = this.questionsAsked;
-    questionNumChosen = chooseRandomQuestion(questionBankforRandom, questionsAskedArr);
-    // change player
-    // show next question
-    // repeat until 10 questions asked
-    // display who won
-    // restart the game
-    this.questionsAsked.push(questionNumChosen);
-    this.currentQuestion += 1;
+    questionNumChosen = chooseRandomQuestion(questionBankforRandom, questionsAskedArr); //keeping track of the question number chosen at random
+    questionsAskedArr.push(questionNumChosen);
+    if((this.currentQuestion - 1)% 2 === 0){
+      playerTurn = 0;
+    }else{
+      playerTurn = 1;
+    }
+
+    $("#turn").text("PLAYER " + (playerTurn +1 ) + " TO ANSWER" );
     $(".question-number-container h2").text("QUESTION " + this.currentQuestion + "/10");
 
-    $(".true-container").click(function(){
-      var questionAsked = this.questionBank[questionNumChosen];
-      scoreChange = displayAnswer("TRUE", questionAsked);
-      this.playerScore[this.playerTurn] += scoreChange;
-      console.log(this.playerScore);
-    }.bind(this));
-
-    $(".false-container").click(function(){
-      var questionAsked = this.questionBank[questionNumChosen];
-      scoreChange = displayAnswer("FALSE", questionAsked);
-      this.playerScore[this.playerTurn] += scoreChange;
-      console.log(this.playerScore);
-    }.bind(this));
-
-    $(".close-btn").click(function(){
-      
-    })
-
   }.bind(this); //closes askQuestion function
+
   askQuestion();
+
+  // button listeners
+  $(".true-container").click(function(){
+    var questionAsked = this.questionBank[questionNumChosen];
+    var turnNumber = this.currentQuestion;
+    scoreChange = displayAnswer("TRUE", questionAsked, turnNumber);
+    this.playerScore[playerTurn] += scoreChange;
+    console.log(this.playerScore);
+    // playerScore[playerTurn] += scoreChange;
+    $(".player-one-container h2").text("PLAYER 1: " + this.playerScore[0]);
+    $(".player-two-container h2").text("PLAYER 2: " + this.playerScore[1]);
+    // this.playerScore = playerScore;
+  }.bind(this));
+
+  $(".false-container").click(function(){
+    var questionAsked = this.questionBank[questionNumChosen];
+    var turnNumber = this.currentQuestion;
+    scoreChange = displayAnswer("FALSE", questionAsked, turnNumber);
+    this.playerScore[playerTurn] += scoreChange;
+    console.log(this.playerScore);
+    // playerScore[playerTurn] += scoreChange;
+    $(".player-one-container h2").text("PLAYER 1: " + this.playerScore[0]);
+    $(".player-two-container h2").text("PLAYER 2: " + this.playerScore[1]);
+    // this.playerScore = playerScore;
+  }.bind(this));
+
+  $(".close-btn").click(function(){
+    this.currentQuestion += 1;
+    if(this.currentQuestion < 11){
+      $(".answer-container").css("display","none");
+      askQuestion();
+    }else{
+      if(this.playerScore[0] > this.playerScore[1]){
+        $(".winner-text-container h2").text("PLAYER 1 WON!");
+      }else if(this.playerScore[1] > this.playerScore[0]){
+        $(".winner-text-container h2").text("PLAYER 2 WON!");
+      }else{
+        $(".winner-text-container").css("left", "25%");
+        $(".winner-text-container h2").text("IT'S A DRAW!");
+      }
+      $(".winner-container").css("display", "block");
+    }
+  }.bind(this));
 };
+
+var restartGame = function(){
+  console.log(this);
+  this.questionsAsked = [];
+  this.playerTurn = 0;
+  this.currentQuestion = 1;
+  this.playerScore = [0, 0];
+  this.outcome = "";
+  $(".winner-container").css("display", "none");
+  $(".answer-container").css("display","none");
+  $(".turn-container").css("display", "block");
+  $(".winner-text-container").css("left", "19%");
+  $(".player-one-container h2").text("PLAYER 1: " + this.playerScore[0]);
+  $(".player-two-container h2").text("PLAYER 2: " + this.playerScore[1]);
+  askQuestion();
+}.bind(this);
+
+$(".win-close-btn").click(function(){
+  console.log(this);
+  restartGame();
+});
+
+$(".restart-container").click(function(){
+  restartGame();
+});
 
 function chooseRandomQuestion(questionBankforRandom, questionsAskedArr){
   var questionNumChosen = Math.floor(20 * Math.random() + 1);
@@ -51,20 +108,28 @@ function chooseRandomQuestion(questionBankforRandom, questionsAskedArr){
     questionNumChosen = chooseRandomQuestion(questionBankforRandom, questionsAskedArr);
   }else{
     var questionChosenText = questionBankforRandom[questionNumChosen].question;
-    $(".question-container h2").text(questionChosenText); // change to display question on html
+    $(".question-container h2").text(questionChosenText);
   }
   return questionNumChosen;
 }
 
-function displayAnswer(choice, questionAsked){
+function displayAnswer(choice, questionAsked, turnNumber){
+  if(turnNumber === 10){
+    $(".close-btn-text h2").text("SHOW WINNER");
+    $(".close-btn-text").css("left", "13px");
+    $(".turn-container").css("display", "none");
+  }else{
+    $(".close-btn-text h2").text("NEXT QUESTION");
+    $(".close-btn-text").css("left", "3px");
+  }
   $(".answer-container").css("display","block");
   $(".answer-text-container h2").text(questionAsked.explanation);
   if(choice === questionAsked.answer){
     $(".outcome-container h2").text(choice + " IS CORRECT!");
-    return 1
+    return 1;
   }else{
     $(".outcome-container h2").text(choice + " IS WRONG!");
-    return 0
+    return 0;
   }
 
 }
@@ -74,13 +139,13 @@ var trueFalseQuiz = new Quiz({
       answer:"TRUE",
       explanation: "Newton's First Law states that an object at rest will stay at rest and an object in motion will continue moving with the same velocity unless an unbalanced force acts on it"},
   2: {question: "Momentum depends on speed and weight",
-      answer:0,
+      answer:"FALSE",
       explanation: "Momentum is the product of velocity and mass"},
   3: {question: "An object that has larger mass will always have more thermal energy than an object with smaller mass of same temperature.",
-      answer:0,
+      answer:"FALSE",
       explanation: "The amount of thermal energy an object has depends on its mass, temperature and specific heat capacity"},
   4: {question: "The Zeroth Law of Thermodynamics is also known as the Law of Entropy",
-      answer:0,
+      answer:"FALSE",
       explanation: "The Zeroth Law of Thermodynamics is about thermal equilibria. The Second Law of Thermodynamics is the one that is known as the Law of Entropy"},
   5: {question: "Current is the measure of the rate of flow of charges",
       answer:"TRUE",

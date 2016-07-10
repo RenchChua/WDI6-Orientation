@@ -1,11 +1,12 @@
 function gameInit(){
-  var Quiz = function(questionBank, questionsAsked, playerTurn, currentQuestion, playerScore, outcome){
+  var Quiz = function(questionBank, questionsAsked, playerTurn, currentQuestion, playerScore, outcome, endGame){
     this.questionBank = questionBank;
     this.questionsAsked = questionsAsked;
     this.playerTurn = playerTurn;
     this.currentQuestion = currentQuestion;
     this.playerScore = playerScore;
     this.outcome = outcome;
+    this.endGame = "false";
   };
 
   Quiz.prototype.play = function(){
@@ -72,6 +73,7 @@ function gameInit(){
       this.currentQuestion = 1;
       this.playerScore = [0, 0];
       this.outcome = "";
+      this.endGame = "true";
       askQuestion();
     }.bind(this);
 
@@ -119,7 +121,13 @@ function gameInit(){
     $(".restart-container").click(function(){
       restartGame();
     }.bind(this));
-  };
+
+    if(this.endGame === "true"){
+      console.log("game ended");
+    }else{
+      console.log("game not ended");
+    }
+  }; //end of play function
 
 
   var quiz1Questions = {
@@ -185,7 +193,8 @@ function gameInit(){
         explanation: "It means 'I think therefore I am' and is the best-known philosophical statement by Rene Descartes"}
   };
 
-  var randomQuestionsQuiz = new Quiz(quiz1Questions, [], 0, 1, [0, 0], "");
+  var randomQuestionsQuiz = new Quiz(quiz1Questions, [], 0, 1, [0, 0], "", "false");
+
 
   randomQuestionsQuiz.play();
 }

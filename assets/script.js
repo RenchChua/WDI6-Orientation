@@ -1,4 +1,4 @@
-function gameInit(){
+$(document).ready(function(){
   var Quiz = function(questionBank, questionsAsked, playerTurn, currentQuestion, playerScore, outcome, endGame){
     this.questionBank = questionBank;
     this.questionsAsked = questionsAsked;
@@ -195,8 +195,5 @@ function gameInit(){
 
   var randomQuestionsQuiz = new Quiz(quiz1Questions, [], 0, 1, [0, 0], "", "false");
 
-
   randomQuestionsQuiz.play();
-}
-
-gameInit();
+});

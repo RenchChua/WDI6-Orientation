@@ -1,3 +1,5 @@
+// some documentation
+
 $(document).ready(function(){
   var Quiz = function(questionBank, questionsAsked, playerTurn, currentQuestion, playerScore, outcome, endGame){
     this.questionBank = questionBank;

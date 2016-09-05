@@ -15,32 +15,24 @@ $(document).ready(function(){
     var scoreChange = 0;
 
     var askQuestion = function(){
-      questionNumChosen = chooseRandomQuestion(this.questionBank, this.questionsAsked); //keeping track of the question number chosen at random
-      this.questionsAsked.push(questionNumChosen);
-      if((this.currentQuestion - 1)% 2 === 0){
-        playerTurn = 0;
-      }else{
-        playerTurn = 1;
-      }
+      questionNumChosen = chooseQuestion(this.questionBank, this.currentQuestion); //keeping track of the question number chosen at random
+      console.log(this.playerTurn);
 
-      $("#turn").text("PLAYER " + (playerTurn +1 ) + " TO ANSWER" );
-      $(".question-number-container h2").text("QUESTION " + this.currentQuestion + "/10");
+      $("#turn").text("PLAYER " + (this.playerTurn ) + " TO ANSWER" );
+      $(".question-number-container h2").text("QUESTION " + this.currentQuestion + "/6");
 
     }.bind(this); //closes askQuestion function
 
-    function chooseRandomQuestion(questionBankforRandom, questionsAskedArr){
-      var questionNumChosen = Math.floor(20 * Math.random() + 1);
-      if(questionsAskedArr.indexOf(questionNumChosen) > -1){
-        questionNumChosen = chooseRandomQuestion(questionBankforRandom, questionsAskedArr);
-      }else{
-        var questionChosenText = questionBankforRandom[questionNumChosen].question;
+    function chooseQuestion(questionBank, questionNumChosen){
+        var questionChosenText = questionBank[questionNumChosen].question;
         $(".question-container h2").text(questionChosenText);
-      }
-      return questionNumChosen;
     }
 
     function displayAnswer(choice, questionAsked, turnNumber){
-      if(turnNumber === 10){
+      console.log("choice is ", choice);
+      console.log("questionAsked is ", questionAsked);
+      console.log("correct answer is ", questionAsked.answer);
+      if(turnNumber === 6){
         $(".close-btn-text h2").text("SHOW WINNER");
         $(".close-btn-text").css("left", "13px");
         $(".turn-container").css("display", "none");
@@ -69,7 +61,7 @@ $(document).ready(function(){
       $(".player-one-container h2").text("PLAYER 1: 0" );
       $(".player-two-container h2").text("PLAYER 2: 0");
       this.questionsAsked = [];
-      this.playerTurn = 0;
+      this.playerTurn = 1;
       this.currentQuestion = 1;
       this.playerScore = [0, 0];
       this.outcome = "";
@@ -79,26 +71,33 @@ $(document).ready(function(){
 
     // button listeners
     $(".true-container").click(function(){
-      var questionAsked = this.questionBank[questionNumChosen];
+      var questionAsked = this.questionBank[this.currentQuestion];
+      console.log(questionAsked);
       var turnNumber = this.currentQuestion;
       scoreChange = displayAnswer("TRUE", questionAsked, turnNumber);
-      this.playerScore[playerTurn] += scoreChange;
+      this.playerScore[this.playerTurn - 1] += scoreChange;
       $(".player-one-container h2").text("PLAYER 1: " + this.playerScore[0]);
       $(".player-two-container h2").text("PLAYER 2: " + this.playerScore[1]);
     }.bind(this));
 
     $(".false-container").click(function(){
-      var questionAsked = this.questionBank[questionNumChosen];
+      var questionAsked = this.questionBank[this.currentQuestion];
+      console.log(questionAsked);
       var turnNumber = this.currentQuestion;
       scoreChange = displayAnswer("FALSE", questionAsked, turnNumber);
-      this.playerScore[playerTurn] += scoreChange;
+      this.playerScore[this.playerTurn - 1] += scoreChange;
       $(".player-one-container h2").text("PLAYER 1: " + this.playerScore[0]);
       $(".player-two-container h2").text("PLAYER 2: " + this.playerScore[1]);
     }.bind(this));
 
     $(".close-btn").click(function(){
       this.currentQuestion += 1;
-      if(this.currentQuestion < 11){
+      if (this.currentQuestion % 2 === 1) {
+        this.playerTurn = 1;
+      }else{
+        this.playerTurn = 2;
+      }
+      if(this.currentQuestion <= 6){
         $(".answer-container").css("display","none");
         askQuestion();
       }else{
@@ -111,6 +110,7 @@ $(document).ready(function(){
           $(".winner-text-container h2").text("IT'S A DRAW!");
         }
         $(".winner-container").css("display", "block");
+
       }
     }.bind(this));
 
@@ -122,33 +122,28 @@ $(document).ready(function(){
       restartGame();
     }.bind(this));
 
-    if(this.endGame === "true"){
-      console.log("game ended");
-    }else{
-      console.log("game not ended");
-    }
   }; //end of play function
 
 
   var quiz1Questions = {
-    1: {question: "Newton's First Law is also known as the Law of Inertia",
-        answer:"TRUE",
-        explanation: "Newton's First Law states that an object at rest will stay at rest and an object in motion will continue moving with the same velocity unless an unbalanced force acts on it"},
-    2: {question: "Momentum depends on speed and weight",
+    1: {question: "You need to be really smart to be able to learn programming",
         answer:"FALSE",
-        explanation: "Momentum is the product of velocity and mass"},
-    3: {question: "An object that has larger mass will always have more thermal energy than an object with smaller mass of same temperature.",
-        answer:"FALSE",
-        explanation: "The amount of thermal energy an object has depends on its mass, temperature and specific heat capacity"},
-    4: {question: "The Zeroth Law of Thermodynamics is also known as the Law of Entropy",
-        answer:"FALSE",
-        explanation: "The Zeroth Law of Thermodynamics is about thermal equilibria. The Second Law of Thermodynamics is the one that is known as the Law of Entropy"},
-    5: {question: "Current is the measure of the rate of flow of charges",
+        explanation: "Being smart helps. But working hard and consistently is more important."},
+    2: {question: "In the next 12 weeks, you will still have time for other things",
         answer:"TRUE",
-        explanation: "Current is a base quantity. Its SI unit is the Ampere"},
-    6: {question: "Energy is a scalar quantity",
+        explanation: "Intensive as the course is, if you manage your time well, you can still have time for family, friends, girlfriend, boyfriend, being a doctor in AnE"},
+    3: {question: "You will learn everything you need to know to be a kickass developer in WDI",
+        answer:"FALSE",
+        explanation: "Web-dev evolves very quickly. No course will be able to teach you everything you need. WDI will equip you with the ability to read documentation and learn new web-dev stuff quickly."},
+    4: {question: "The instructional team will be able to answer all your questions and solve all your problems.",
+        answer:"FALSE",
+        explanation: "It is impossible to know everything there is to know. Google will very quickly (if not already) become your best friend. Stackoverflow will be another great buddy of yours too."},
+    5: {question: "Asking questions is a great way to learn.",
         answer:"TRUE",
-        explanation: "Energy is the dot product of two vectors - force and displacement"},
+        explanation: "There are no such things as stupid questions in this course. Keep asking questions (related to web-dev). And even if we can't answer them, we can explore them as a team, and together, become better developers"},
+    6: {question: "Teaching one another is another great way to learn.",
+        answer:"TRUE",
+        explanation: "When you explain things to someone else, you really test your knowledge and understanding. So help one another freely and proactively. We are in this together. As a team, Together, Everyone Achieves More!"},
     7: {question: "In 1905, Albert Einstein wrote four scientific papers, each of which could have won a Nobel Prize",
         answer:"TRUE",
         explanation: "The four papers were on the photoelectric effect, special relativity, Brownian motion, and mass-energy equivalence respectively. Einstein eventually won the Nobel Prize for the paper on the photoelectric effect"},
@@ -193,7 +188,7 @@ $(document).ready(function(){
         explanation: "It means 'I think therefore I am' and is the best-known philosophical statement by Rene Descartes"}
   };
 
-  var randomQuestionsQuiz = new Quiz(quiz1Questions, [], 0, 1, [0, 0], "", "false");
+  var randomQuestionsQuiz = new Quiz(quiz1Questions, [], 1, 1, [0, 0], "", "false");
 
   randomQuestionsQuiz.play();
 });
